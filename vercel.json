@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "installCommand": "cd react-frontend && npm install",
+  "buildCommand": "cd react-frontend && npm run build",
+  "outputDirectory": "react-frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
