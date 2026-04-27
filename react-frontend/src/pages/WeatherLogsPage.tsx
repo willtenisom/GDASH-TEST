@@ -57,6 +57,7 @@ const weatherCodeMap: { [key: number]: string } = {
 
 type SortField = 'timestamp' | 'temperature' | 'humidity' | 'windspeed' | 'weathercode' | 'precipitation_probability';
 type SortDirection = 'asc' | 'desc';
+type SortableValue = number | string | null | undefined;
 
 export function WeatherLogsPage() {
   const [weatherLogs, setWeatherLogs] = useState<WeatherLog[]>([]);
@@ -122,8 +123,8 @@ export function WeatherLogsPage() {
   // Ordena os logs e trata valores nulos/undefined (coloca no final)
   const applySortAndSet = (logs: WeatherLog[]) => {
     const sorted = [...logs].sort((a, b) => {
-      let aVal: any = a[sortField];
-      let bVal: any = b[sortField];
+      let aVal: SortableValue = a[sortField];
+      let bVal: SortableValue = b[sortField];
 
       // Converte timestamp para número para comparação
       if (sortField === 'timestamp') {
@@ -199,9 +200,13 @@ export function WeatherLogsPage() {
         ? `${response.data.count} log(s) criado(s) com sucesso!`
         : 'Log atualizado com sucesso!';
       alert(message);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao atualizar log:', err);
-      alert(err?.response?.data?.message || 'Falha ao atualizar log.');
+      if (axios.isAxiosError(err)) {
+        alert(err.response?.data?.message || 'Falha ao atualizar log.');
+      } else {
+        alert('Falha ao atualizar log.');
+      }
     } finally {
       setUpdating(false);
     }
@@ -233,9 +238,13 @@ export function WeatherLogsPage() {
       await axios.delete(url);
       await fetchWeatherLogs();
       alert('Logs limpos com sucesso!');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao limpar logs:', err);
-      alert(err?.response?.data?.message || 'Falha ao limpar logs.');
+      if (axios.isAxiosError(err)) {
+        alert(err.response?.data?.message || 'Falha ao limpar logs.');
+      } else {
+        alert('Falha ao limpar logs.');
+      }
     } finally {
       setClearing(false);
     }
